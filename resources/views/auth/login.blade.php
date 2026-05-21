@@ -8,7 +8,7 @@
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Correo')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Correo electrónico" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Por favor, rellene este campo.' : 'Por favor, incluya un signo @ en la dirección de correo electrónico.')" oninput="this.setCustomValidity('')" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
