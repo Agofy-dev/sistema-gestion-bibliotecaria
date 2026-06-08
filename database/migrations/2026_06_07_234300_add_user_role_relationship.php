@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('cedula')->unique()->after('email');
-            $table->string('telefono')->nullable()->after('cedula');
+            $table
+                ->foreignId('role_id')
+                ->constrained(table: 'roles', column: 'id')
+                ->nullOnDelete();
         });
     }
 
@@ -23,11 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn([
-                'cedula',
-                'telefono',
-            ]);
+            $table->dropColumn(['role_id']);
         });
     }
-    }
-;
+};
