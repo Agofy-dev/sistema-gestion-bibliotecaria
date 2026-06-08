@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('cedula')->unique()->after('email');
-            $table->string('telefono')->nullable()->after('cedula');
+            $table->string('second_name');
+            $table->string('last_name');
+            $table->string('second_last_name');
+            $table->boolean('status')->default(true);
+            $table->boolean('disabled')->default(false);
         });
     }
 
@@ -24,10 +27,12 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
-                'cedula',
-                'telefono',
+                'second_name',
+                'last_name',
+                'second_last_name',
+                'status',
+                'disabled',
             ]);
         });
     }
-    }
-;
+};
