@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
 use App\Models\Permission;
 use App\Models\RolePermission;
@@ -19,7 +19,7 @@ class Role extends Model
         'disabled',
     ];
 
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class, 'role_id');
     }
