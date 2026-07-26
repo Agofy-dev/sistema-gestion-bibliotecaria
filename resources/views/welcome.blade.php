@@ -46,7 +46,7 @@
                 Casa Ramos Sucre, Calle Sucre, Nº 29. Frente a la Iglesia Santa Inés.
             </p>
             <p class="text-sm leading-relaxed text-[#3b3226] mb-8 font-sans">
-                Bienvenido a la biblioteca digital de la Casa Ramos Sucre. Acceda al acervo documental e histórico a través de sus credenciales institucionales.
+                Bienvenido a la biblioteca digital de la Casa Ramos Sucre. Acceda al acervo documental e histórico a través de nuestra plataforma. Explore, descubra y disfrute de la riqueza literaria que ofrecemos.
             </p>
             <div class="flex justify-center gap-4">
                 <a href="{{ route('login') }}" class="px-6 py-3 bg-[#4a422d] text-[#f8f5ee] text-xs font-bold uppercase tracking-widest rounded-lg shadow hover:bg-[#383222] transition">

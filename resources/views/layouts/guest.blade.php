@@ -31,9 +31,9 @@
 
                     <!-- Logo Casa Ramos Sucre (Fusionado perfectamente con el fondo) -->
                     <div class="flex justify-center items-center px-1 flex-1">
-                        <img src="{{ asset('images/LOGO-CASA-RAMOS-SUCRE.png') }}" 
-                            alt="Casa Ramos Sucre" 
-                            class="h-16 sm:h-20 w-auto object-contain mix-blend-multiply">
+                        <a href="{{ url('/') }}" title="Volver al inicio" class="inline-block transition-transform hover:scale-105">
+                            <img src="{{ asset('images/LOGO-CASA-RAMOS-SUCRE.png') }}" alt="Casa Ramos Sucre" class="h-16 w-auto">
+                        </a>
                     </div>
 
                     <!-- Retrato Ramos Sucre -->
