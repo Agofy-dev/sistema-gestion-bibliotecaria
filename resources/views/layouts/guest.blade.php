@@ -56,7 +56,7 @@
 
                 <!-- DIRECCIÓN PIE DE PÁGINA -->
                 <div class="mt-6 pt-3 border-t border-[#e2d6be] text-center">
-                    <p class="text-[10px] text-[#70685c] leading-tight font-serif">
+                    <p class="text-xs text-[#5c3e21] font-semibold text-center mt-4">
                         Casa Ramos Sucre, Calle Sucre, Nº 29. Frente a la Iglesia Santa Inés.
                     </p>
                 </div>
