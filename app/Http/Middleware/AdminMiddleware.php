@@ -10,11 +10,13 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Valida si está autenticado y si su relación 'role' es administrador
-        if (auth()->check() && auth()->user()->role && auth()->user()->role->name === 'admin') {
+        $user = auth()->user();
+
+        // Permite el acceso si el usuario es SuperAdmin o Admin
+        if ($user && ($user->role_id === 1 || in_array($user->role?->key, ['super_admin', 'admin']))) {
             return $next($request);
         }
 
-        return redirect('/dashboard')->with('error', 'Acceso Denegado');
+        return redirect()->route('dashboard')->with('error', 'Acceso Denegado. Se requieren permisos de administrador.');
     }
 }

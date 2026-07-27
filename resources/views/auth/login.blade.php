@@ -6,9 +6,19 @@
         @csrf
 
         <!-- Email Address -->
+        <!-- Correo Electrónico -->
         <div>
-            <x-input-label for="email" :value="__('Correo')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Por favor, rellene este campo.' : 'Por favor, incluya un signo @ en la dirección de correo electrónico.')" oninput="this.setCustomValidity('')" />
+            <x-input-label for="email" :value="__('Correo Electrónico')" />
+            <x-text-input 
+                id="email" 
+                class="block mt-1 w-full" 
+                type="email" 
+                name="email" 
+                :value="old('email')" 
+                required 
+                autocomplete="username" 
+                inputmode="email"
+            />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -34,16 +44,21 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('¿Olvidaste tu contraseña?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
+        <!-- Acciones: Botón full-width y enlace en tono marrón personalizado -->
+        <div class="mt-6 flex flex-col space-y-3">
+            {{-- Botón con el marrón sepia de welcome.php --}}
+            <x-primary-button class="w-full justify-center py-3 !bg-[#4a432e] hover:!bg-[#373222] focus:!bg-[#373222] text-white uppercase tracking-wider font-bold">
                 {{ __('Iniciar sesión') }}
             </x-primary-button>
+
+            {{-- Enlace alineado a la derecha con tono marrón sepia --}}
+            @if (Route::has('password.request'))
+                <div class="text-right">
+                    <a class="underline text-sm text-[#5c3e21] hover:text-[#373222] font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5c3e21]" href="{{ route('password.request') }}">
+                        {{ __('¿Olvidaste tu contraseña?') }}
+                    </a>
+                </div>
+            @endif
         </div>
     </form>
 </x-guest-layout>

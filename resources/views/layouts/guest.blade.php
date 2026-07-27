@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Archivo Ramos Sucre') }}</title>
+        <title>{{ config('app.name', 'Biblioteca Casa Ramos Sucre') }}</title>
 
         <!-- Fuentes -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -31,9 +31,9 @@
 
                     <!-- Logo Casa Ramos Sucre (Fusionado perfectamente con el fondo) -->
                     <div class="flex justify-center items-center px-1 flex-1">
-                        <img src="{{ asset('images/LOGO-CASA-RAMOS-SUCRE.png') }}" 
-                            alt="Casa Ramos Sucre" 
-                            class="h-16 sm:h-20 w-auto object-contain mix-blend-multiply">
+                        <a href="{{ url('/') }}" title="Volver al inicio" class="inline-block transition-transform hover:scale-105">
+                            <img src="{{ asset('images/LOGO-CASA-RAMOS-SUCRE.png') }}" alt="Casa Ramos Sucre" class="h-16 w-auto">
+                        </a>
                     </div>
 
                     <!-- Retrato Ramos Sucre -->
@@ -56,7 +56,7 @@
 
                 <!-- DIRECCIÓN PIE DE PÁGINA -->
                 <div class="mt-6 pt-3 border-t border-[#e2d6be] text-center">
-                    <p class="text-[10px] text-[#70685c] leading-tight font-serif">
+                    <p class="text-xs text-[#5c3e21] font-semibold text-center mt-4">
                         Casa Ramos Sucre, Calle Sucre, Nº 29. Frente a la Iglesia Santa Inés.
                     </p>
                 </div>
