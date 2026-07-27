@@ -15,7 +15,7 @@
                 
                 <div class="mt-4 sm:mt-0">
                     <a href="{{ route('users.create') }}" 
-                       class="inline-flex items-center px-5 py-2.5 bg-[#4a432e] hover:bg-[#373222] text-white font-semibold text-xs uppercase tracking-widest rounded-md shadow transition ease-in-out duration-150">
+                        class="inline-flex items-center px-5 py-2.5 bg-[#4a432e] hover:bg-[#373222] text-white font-semibold text-xs uppercase tracking-widest rounded-md shadow transition ease-in-out duration-150">
                         <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -57,21 +57,31 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         @php
-                                            $roleName = $user->role->name ?? $user->role->key ?? 'Lector';
-                                            $roleKey = strtolower($user->role->key ?? 'lector');
+                                            // Obtiene el texto del rol ya sea un objeto de relación o un string directo
+                                            $roleText = is_object($user->role) 
+                                                ? ($user->role->name ?? $user->role->key ?? 'Lector') 
+                                                : ($user->role ?? 'Lector');
+
+                                            $roleSlug = strtolower($roleText);
                                         @endphp
 
-                                        @if(in_array($roleKey, ['superadmin', 'director']))
-                                            <span class="px-3 py-1 text-xs font-bold text-[#4a3200] bg-[#fef3c7] border border-[#f59e0b] rounded-full shadow-sm">
-                                                {{ $roleName }}
+                                        @if(str_contains($roleSlug, 'super') || str_contains($roleSlug, 'director'))
+                                            <!-- SuperAdmin (Director): Estilo dorado / ámbar imponente con estrella -->
+                                            <span class="inline-flex items-center px-3 py-1 text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#f59e0b] rounded-full shadow-sm tracking-wide">
+                                                <svg class="w-3.5 h-3.5 me-1 text-[#d97706]" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                </svg>
+                                                {{ $roleText }}
                                             </span>
-                                        @elseif(in_array($roleKey, ['admin', 'bibliotecario']))
-                                            <span class="px-3 py-1 text-xs font-bold text-[#1e3a8a] bg-[#dbeafe] border border-[#3b82f6] rounded-full shadow-sm">
-                                                {{ $roleName }}
+                                        @elseif(str_contains($roleSlug, 'admin') || str_contains($roleSlug, 'bibliotecario'))
+                                            <!-- Admin (Bibliotecario): Estilo azul profesional -->
+                                            <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-[#1e3a8a] bg-[#dbeafe] border border-[#3b82f6] rounded-full shadow-sm">
+                                                {{ $roleText }}
                                             </span>
                                         @else
-                                            <span class="px-3 py-1 text-xs font-bold text-[#374151] bg-[#f3f4f6] border border-[#d1d5db] rounded-full shadow-sm">
-                                                {{ $roleName }}
+                                            <!-- Lector / Normal: Estilo neutro sobrio -->
+                                            <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-[#4b5563] bg-[#f3f4f6] border border-[#d1d5db] rounded-full shadow-sm">
+                                                {{ $roleText }}
                                             </span>
                                         @endif
                                     </td>
@@ -79,7 +89,7 @@
                                         <div class="flex justify-center items-center space-x-3">
                                             <!-- Botón Editar -->
                                             <a href="{{ route('users.edit', $user->id) }}" 
-                                               class="text-[#5c3e21] hover:text-[#373222] font-semibold text-xs uppercase tracking-wider underline hover:no-underline transition">
+                                                class="text-[#5c3e21] hover:text-[#373222] font-semibold text-xs uppercase tracking-wider underline hover:no-underline transition">
                                                 Editar
                                             </a>
 
@@ -107,7 +117,7 @@
                     </table>
                 </div>
 
-                <!-- Paginación (si aplica) -->
+                <!-- Paginación -->
                 @if(method_exists($users, 'links'))
                     <div class="p-4 bg-[#f7f5f0] border-t border-[#e2dcce]">
                         {{ $users->links() }}
