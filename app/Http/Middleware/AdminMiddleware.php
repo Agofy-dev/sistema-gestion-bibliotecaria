@@ -10,8 +10,10 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Si no es admin (o role_id != 1), lo rebota al dashboard con un mensaje de error
-        if (auth()->check() && (auth()->user()->role?->name === 'admin' || auth()->user()->role_id === 1)) {
+        $user = auth()->user();
+
+        // Permite el acceso si el usuario es SuperAdmin o Admin
+        if ($user && ($user->role_id === 1 || in_array($user->role?->key, ['super_admin', 'admin']))) {
             return $next($request);
         }
 

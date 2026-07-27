@@ -2,74 +2,132 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
-    // Read: getAll() -> Lista de usuarios
+    /**
+     * Middleware de protección usando el estándar moderno de Laravel (HasMiddleware).
+     * Restringe el acceso completo al módulo si el usuario tiene rol de 'lector'.
+     */
+    public static function middleware(): array
+    {
+        return [
+            function ($request, $next) {
+                $user = auth()->user();
+
+                if (!$user || $user->hasRole('lector')) {
+                    abort(403, 'No tiene permisos para acceder al Módulo de Usuarios.');
+                }
+
+                return $next($request);
+            }
+        ];
+    }
+
+    /**
+     * Muestra la lista general de usuarios.
+     */
     public function index()
     {
-        $users = User::with('role')->get();
+        $users = User::with('role')->orderBy('id', 'desc')->get();
         return view('users.index', compact('users'));
     }
 
-    // Formulario de creación
+    /**
+     * Muestra el formulario para crear un nuevo usuario.
+     */
     public function create()
     {
         $roles = Role::all();
         return view('users.create', compact('roles'));
     }
 
-    // Create: create($datos) -> Guardar nuevo usuario
+    /**
+     * Registra un nuevo usuario en la base de datos.
+     */
     public function store(Request $request)
     {
+        // Si no es SuperAdmin, el rol asignado por defecto siempre será Lector
+        if (!auth()->user()->hasRole('super_admin')) {
+            $lectorRole = Role::where('key', 'lector')->first() ?? Role::where('name', 'Lector')->first();
+            $request->merge(['role_id' => $lectorRole->id ?? 3]);
+        }
+
         $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'role_id' => 'required|exists:roles,id',
+            'name' => ['required', 'string', 'max:255'],
+            'second_name' => ['nullable', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'second_last_name' => ['nullable', 'string', 'max:255'],
+            'cedula' => ['required', 'string', 'max:20', 'unique:users,cedula'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role_id' => ['required', 'exists:roles,id'],
         ]);
 
         User::create([
-            'name'             => $request->name,
-            'second_name'      => $request->second_name ?? '',      // Evita el null violation
-            'last_name'        => $request->last_name,
-            'second_last_name' => $request->second_last_name ?? '', // Protege el segundo apellido
-            'cedula'           => $request->cedula,
-            'telefono'         => $request->telefono ?? '',         // Protege el teléfono
-            'email'            => $request->email,
-            'password'         => Hash::make($request->password),
-            'role_id'          => $request->role_id,
+            'name' => $request->name,
+            'second_name' => $request->second_name,
+            'last_name' => $request->last_name,
+            'second_last_name' => $request->second_last_name,
+            'cedula' => $request->cedula,
+            'telefono' => $request->telefono,
+            'email' => $request->email,
+            'password' => $request->password, // Hashed automáticamente por el cast del modelo User
+            'role_id' => $request->role_id,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
+        return redirect()->route('users.index')->with('success', 'Usuario registrado correctamente.');
     }
 
-    // Formulario de edición: getById($id)
+    /**
+     * Muestra el formulario para editar un usuario existente.
+     */
     public function edit(User $user)
     {
         $roles = Role::all();
         return view('users.edit', compact('user', 'roles'));
     }
 
-    // Update: update($id, $datos) -> Actualizar usuario
+    /**
+     * Actualiza los datos del usuario especificado.
+     */
     public function update(Request $request, User $user)
     {
+        // Si no es SuperAdmin, se preserva el rol que ya tenía el usuario
+        if (!auth()->user()->hasRole('super_admin')) {
+            $request->merge(['role_id' => $user->role_id]);
+        }
+
         $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role_id' => 'required|exists:roles,id',
+            'name' => ['required', 'string', 'max:255'],
+            'second_name' => ['nullable', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'second_last_name' => ['nullable', 'string', 'max:255'],
+            'cedula' => ['required', 'string', 'max:20', Rule::unique('users')->ignore($user->id)],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'role_id' => ['required', 'exists:roles,id'],
         ]);
 
-        $data = $request->only(['name', 'second_name', 'last_name', 'second_last_name', 'cedula', 'telefono', 'email', 'role_id']);
+        $data = [
+            'name' => $request->name,
+            'second_name' => $request->second_name,
+            'last_name' => $request->last_name,
+            'second_last_name' => $request->second_last_name,
+            'cedula' => $request->cedula,
+            'telefono' => $request->telefono,
+            'email' => $request->email,
+            'role_id' => $request->role_id,
+        ];
 
         if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            $data['password'] = $request->password;
         }
 
         $user->update($data);
@@ -77,7 +135,9 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    // Delete: delete($id) -> Eliminar usuario
+    /**
+     * Elimina a un usuario de la base de datos.
+     */
     public function destroy(User $user)
     {
         $user->delete();

@@ -17,7 +17,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Muestra la vista de registro.
      */
     public function create(): View
     {
@@ -25,17 +25,25 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Procesa la solicitud de registro.
      *
      * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
+        // 1. Convertir el correo a minúsculas internamente ANTES de validar
+        if ($request->has('email')) {
+            $request->merge([
+                'email' => strtolower(trim($request->email)),
+            ]);
+        }
+
+        // 2. Validación estándar de Laravel (sin la regla 'lowercase')
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'cedula' => ['required', 'string', 'max:20', 'unique:'.User::class],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -51,7 +59,7 @@ class RegisteredUserController extends Controller
             'telefono' => $request->telefono,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => $lectorRole ? $lectorRole->id : 3, // Asigna el ID del rol Lector
+            'role_id' => $lectorRole ? $lectorRole->id : 3,
         ]);
 
         event(new Registered($user));

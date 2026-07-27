@@ -24,6 +24,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Convertir el correo a minúsculas antes de procesar la autenticación
+        if ($request->has('email')) {
+            $request->merge([
+                'email' => strtolower($request->email),
+            ]);
+        }
+
         $request->authenticate();
 
         $request->session()->regenerate();
